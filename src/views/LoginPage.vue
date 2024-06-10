@@ -5,10 +5,27 @@
       <input v-model="user.email" type="email" placeholder="Email" required class="input-field"/>
       <input v-model="user.password" type="password" placeholder="Password" required class="input-field"/>
       <button type="submit" class="submit-btn">Login</button>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </form>
+    <button @click="goToRegister" class="register-btn">Crear cuenta</button>
   </div>
 </template>
 <script>
+
+import { auth } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
+const firebaseConfig = {
+    apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+    authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.VUE_APP_FIREBASE_APP_ID,
+    measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
+};
+console.log(firebaseConfig)
+
 export default {
   name: 'LoginPage',
   data() {
@@ -16,13 +33,23 @@ export default {
       user: {
         email: '',
         password: ''
-      }
+      },
+      errorMessage: ''
     };
   },
   methods: {
-    login() {
-      localStorage.setItem('user', JSON.stringify(this.user));
-      this.$router.push('/home');
+    async login() {
+      try {
+        console.log("Starting login process...")
+        await signInWithEmailAndPassword(auth, this.user.email, this.user.password);
+        console.log("Login successful!")
+        this.$router.push('/home');
+      } catch (error) {
+        this.errorMessage = error.message;
+      }
+    },
+    goToRegister() {
+      this.$router.push('/register');
     }
   }
 };
@@ -70,7 +97,27 @@ export default {
   background-color: #45a049;
 }
 
+.register-btn {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-btn:hover {
+  background-color: #0056b3;
+}
+
 h1 {
   color: #333;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
