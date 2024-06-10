@@ -15,6 +15,8 @@
 import { auth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+console.log("VUE_APP_FIREBASE_MEASUREMENT_ID", process.env.VUE_APP_FIREBASE_MEASUREMENT_ID)
+
 export default {
   name: 'LoginPage',
   data() {
